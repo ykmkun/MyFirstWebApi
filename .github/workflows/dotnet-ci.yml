@@ -1,0 +1,35 @@
+name: .NET Core Web API CI
+
+# 觸發條件：當 main 分支有任何 Push 或 PR 時，立刻發動機器人
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # 這裡的 ubuntu-latest 是雲端虛擬機的環境，負責高效率編譯你的 .NET 專案
+    runs-on: ubuntu-latest
+
+    steps:
+    # 步驟 1：下載最新推送上來的程式碼
+    - uses: actions/checkout@v4
+
+    # 步驟 2：在 Linux 虛擬機中安裝並設定 .NET SDK 8.0 環境
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    # 步驟 3：還原專案相依套件（NuGet 套件）
+    - name: Restore dependencies
+      run: dotnet restore
+
+    # 步驟 4：進行編譯（Build），確保無語法錯誤、無遺漏套件
+    - name: Build
+      run: dotnet build --no-restore
+
+    # 步驟 5：(預留) 未來導入單元測試時，自動執行測試並產出報告
+    # - name: Test
+    #   run: dotnet test --no-build
